@@ -14,9 +14,9 @@ type Config struct {
 	Salt            string `env:"SALT"`
 }
 
-var config Config
+func mustReadConfig() Config {
+	var config Config
 
-func readConfig() {
 	flag.StringVar(&config.Endpoint, "a", "localhost:8080", "address and port of metrics server")
 	flag.StringVar(&config.DatabaseDSN, "d", "", "Database connection URL in pgx format, for ex. postgres://jack:secret@pg.example.com:5432/mydb?sslmode=verify-ca&pool_max_conns=10")
 	flag.StringVar(&config.AccrualEndpoint, "r", "localhost:8080", "address and port of accrual service")
@@ -27,4 +27,6 @@ func readConfig() {
 	if err := env.Parse(&config); err != nil {
 		panic(err)
 	}
+
+	return config
 }

@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-func runDbMigrations(dbURL string) {
+func mustRunDbMigrations(dbURL string) {
 	m, err := migrate.New(
 		"file://db/migrations",
 		dbURL)
