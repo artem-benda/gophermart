@@ -8,16 +8,16 @@ import (
 	"net/http"
 )
 
-type RegisterUser struct {
+type registerUser struct {
 	svc *service.User
 }
 
 func NewRegisterUserHandler(svc *service.User) func(c fiber.Ctx) error {
-	controller := RegisterUser{svc}
-	return controller.RegisterUser
+	controller := registerUser{svc}
+	return controller.registerUser
 }
 
-func (h RegisterUser) RegisterUser(ctx fiber.Ctx) error {
+func (h registerUser) registerUser(ctx fiber.Ctx) error {
 	ctx.Accepts("application/json")
 
 	userDTO := new(dto.RegisterUserRequest)
