@@ -8,13 +8,13 @@ CREATE TABLE order_withdrawals
     CONSTRAINT order_withdrawals_pkey PRIMARY KEY (order_number)
 );
 
-ALTER TABLE user_orders
+ALTER TABLE order_withdrawals
     ADD CONSTRAINT fk_order_withdrawals_user_id FOREIGN KEY (user_id)
         REFERENCES users (id) MATCH SIMPLE
         ON UPDATE CASCADE
         ON DELETE CASCADE;
 
-ALTER TABLE user_orders
+ALTER TABLE order_withdrawals
     ADD CONSTRAINT fk_order_withdrawals_order_number FOREIGN KEY (order_number)
         REFERENCES user_orders (order_number) MATCH SIMPLE
         ON UPDATE CASCADE
