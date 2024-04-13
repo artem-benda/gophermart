@@ -1,14 +1,14 @@
 package handler
 
 import (
-	"github.com/artem-benda/gophermart/internal/domain/service/user"
+	"github.com/artem-benda/gophermart/internal/domain/service"
 	"github.com/gofiber/fiber/v3"
 )
 
-type deps struct {
-	svc user.Login
+type User struct {
+	svc service.User
 }
 
 func Login(ctx fiber.Ctx) error {
-
+	return nil
 }

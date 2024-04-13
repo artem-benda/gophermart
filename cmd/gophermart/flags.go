@@ -18,7 +18,7 @@ func mustReadConfig() Config {
 	var config Config
 
 	flag.StringVar(&config.Endpoint, "a", "localhost:8080", "address and port of metrics server")
-	flag.StringVar(&config.DatabaseDSN, "d", "", "Database connection URL in pgx format, for ex. postgres://jack:secret@pg.example.com:5432/mydb?sslmode=verify-ca&pool_max_conns=10")
+	flag.StringVar(&config.DatabaseDSN, "d", "postgres://ac_gophermart_backend:ac_gophermart_backend123@localhost:5432/gophermart?sslmode=disable", "Database connection URL in pgx format, for ex. postgres://jack:secret@pg.example.com:5432/mydb?sslmode=verify-ca&pool_max_conns=10")
 	flag.StringVar(&config.AccrualEndpoint, "r", "localhost:8080", "address and port of accrual service")
 	flag.StringVar(&config.LogLevel, "l", "debug", "logging level: debug, info, warn, error, dpanic, panic, fatal")
 	flag.StringVar(&config.Salt, "s", "", "salt in base64std format, using for hashing passwords, at least 8 bytes is recommended by the RFC")
