@@ -10,10 +10,11 @@ import (
 
 type registerUser struct {
 	svc *service.User
+	v   *validator.Validate
 }
 
-func NewRegisterUserHandler(svc *service.User) func(c fiber.Ctx) error {
-	controller := registerUser{svc}
+func NewRegisterUserHandler(svc *service.User, v *validator.Validate) func(c fiber.Ctx) error {
+	controller := registerUser{svc, v}
 	return controller.registerUser
 }
 
@@ -29,8 +30,7 @@ func (h registerUser) registerUser(ctx fiber.Ctx) error {
 		return err
 	}
 
-	v := validator.New()
-	err = v.Struct(userDTO)
+	err = h.v.Struct(userDTO)
 	if err != nil {
 		ctx.Response().SetStatusCode(http.StatusBadRequest)
 		return nil
