@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"fmt"
+	"github.com/artem-benda/gophermart/internal/application/jwt"
 	"github.com/artem-benda/gophermart/internal/domain/service"
 	"github.com/artem-benda/gophermart/internal/infrastructure/dto"
 	"github.com/go-playground/validator/v10"
@@ -36,10 +38,18 @@ func (h registerUser) registerUser(ctx fiber.Ctx) error {
 		return nil
 	}
 
-	err = h.svc.Register(ctx, userDTO.Login, userDTO.Password)
+	userID, err := h.svc.Register(ctx, userDTO.Login, userDTO.Password)
 	if err != nil {
 		return err
 	}
+
+	token, err := jwt.BuildJWTString(*userID)
+
+	if err != nil {
+		return err
+	}
+
+	ctx.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 
 	return nil
 }

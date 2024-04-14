@@ -9,7 +9,6 @@ type User struct {
 	UserRepository contract.UserRepository
 }
 
-func (s User) Register(ctx fiber.Ctx, login string, password string) error {
-	_, err := s.UserRepository.Register(ctx, login, password)
-	return err
+func (s User) Register(ctx fiber.Ctx, login string, password string) (*int64, error) {
+	return s.UserRepository.Register(ctx, login, password)
 }
