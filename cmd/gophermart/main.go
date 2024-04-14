@@ -16,9 +16,11 @@ func main() {
 	dbPool := mustCreateConnectionPool(cfg.DatabaseDSN)
 	app := fiber.New()
 	v := validator.New()
+
 	userDAO := dao.User{DB: dbPool}
 	userRepository := repository.UserRepository{DAO: userDAO}
 	registerUserService := service.User{UserRepository: &userRepository}
+
 	app.Post("/api/user/register", handler.NewRegisterUserHandler(&registerUserService, v))
 	app.Post("/api/user/login", handler.Login)
 	log.Fatal(app.Listen(cfg.Endpoint))
