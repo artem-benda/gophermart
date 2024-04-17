@@ -6,6 +6,6 @@ import (
 )
 
 type UserRepository interface {
-	Register(ctx fiber.Ctx, login string, password string) (*int64, error)
+	Register(ctx fiber.Ctx, login string, passwordHash string) (*int64, error)
 	GetUserByLogin(ctx fiber.Ctx, login string) (*entity.User, error)
 }

@@ -19,9 +19,9 @@ func main() {
 
 	userDAO := dao.User{DB: dbPool}
 	userRepository := repository.UserRepository{DAO: userDAO}
-	registerUserService := service.User{UserRepository: &userRepository}
+	userService := service.User{UserRepository: &userRepository, Salt: cfg.mustGetSalt()}
 
-	app.Post("/api/user/register", handler.NewRegisterUserHandler(&registerUserService, v))
-	app.Post("/api/user/login", handler.Login)
+	app.Post("/api/user/register", handler.NewRegisterUserHandler(&userService, v))
+	app.Post("/api/user/login", handler.NewLoginHandler(&userService, v))
 	log.Fatal(app.Listen(cfg.Endpoint))
 }

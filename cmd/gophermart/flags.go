@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/hex"
 	"flag"
 
 	"github.com/caarlos0/env/v10"
@@ -29,4 +30,14 @@ func mustReadConfig() Config {
 	}
 
 	return config
+}
+
+func (c Config) mustGetSalt() []byte {
+	salt, err := hex.DecodeString(c.Salt)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return salt
 }
