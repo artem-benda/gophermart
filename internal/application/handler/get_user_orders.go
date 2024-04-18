@@ -3,6 +3,7 @@ package handler
 import (
 	"github.com/artem-benda/gophermart/internal/application/middleware"
 	"github.com/artem-benda/gophermart/internal/domain/service"
+	"github.com/artem-benda/gophermart/internal/infrastructure/dto"
 	"github.com/gofiber/fiber/v3"
 )
 
@@ -21,7 +22,13 @@ func (h getUserOrders) getList(ctx fiber.Ctx) error {
 	orders, err := h.svc.GetAll(ctx, userID)
 
 	if err != nil {
-		return fiber.ErrInternalServerError
+		return err
+	}
+
+	err = ctx.JSON(dto.MapToDTO(orders))
+
+	if err != nil {
+		return err
 	}
 
 	return nil

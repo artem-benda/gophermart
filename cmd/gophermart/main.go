@@ -28,6 +28,6 @@ func main() {
 	app.Post("/api/user/register", handler.NewRegisterUserHandler(&userService, v))
 	app.Post("/api/user/login", handler.NewLoginHandler(&userService, v))
 	app.Post("/api/user/orders", handler.NewUploadOrderHandler(&orderService))
-	app.Get("/api/user/orders")
+	app.Get("/api/user/orders", handler.NewGetUserOrdersHandler(&orderService))
 	log.Fatal(app.Listen(cfg.Endpoint))
 }

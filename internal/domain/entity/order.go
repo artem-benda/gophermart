@@ -16,5 +16,5 @@ type Order struct {
 	Status        OrderStatus
 	UserID        int64
 	UploadedAt    time.Time
-	AccrualAmount float64
+	AccrualAmount *float64
 }
