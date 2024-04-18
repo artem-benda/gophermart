@@ -20,16 +20,14 @@ var (
 	ErrUnauthorized = errors.New("unauthorized")
 )
 
-func (s User) Register(ctx fiber.Ctx, login string, password string) error {
+func (s User) Register(ctx fiber.Ctx, login string, password string) (*int64, error) {
 	passwordHash, err := computeHash(password, s.Salt)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	_, err = s.UserRepository.Register(ctx, login, *passwordHash)
-
-	return err
+	return s.UserRepository.Register(ctx, login, *passwordHash)
 }
 
 func (s User) Login(ctx fiber.Ctx, login string, password string) error {

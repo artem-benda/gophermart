@@ -21,7 +21,13 @@ func main() {
 	userRepository := repository.UserRepository{DAO: userDAO}
 	userService := service.User{UserRepository: &userRepository, Salt: cfg.mustGetSalt()}
 
+	orderDAO := dao.Order{DB: dbPool}
+	orderRepository := repository.OrderRepository{DAO: orderDAO}
+	orderService := service.Order{OrderRepository: &orderRepository}
+
 	app.Post("/api/user/register", handler.NewRegisterUserHandler(&userService, v))
 	app.Post("/api/user/login", handler.NewLoginHandler(&userService, v))
+	app.Post("/api/user/orders", handler.NewUploadOrderHandler(&orderService))
+	app.Get("/api/user/orders")
 	log.Fatal(app.Listen(cfg.Endpoint))
 }

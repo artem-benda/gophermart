@@ -30,7 +30,16 @@ func NewAuthMiddleware() fiber.Handler {
 			return nil
 		}
 
-		c.Context().SetUserValue("userID", userID)
+		setUserID(c, userID)
+
 		return c.Next()
 	}
+}
+
+func GetUserID(ctx fiber.Ctx) int64 {
+	return ctx.Context().UserValue("userID").(int64)
+}
+
+func setUserID(ctx fiber.Ctx, userID int64) {
+	ctx.Context().SetUserValue("userID", userID)
 }

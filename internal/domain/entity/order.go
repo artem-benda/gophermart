@@ -1,5 +1,7 @@
 package entity
 
+import "time"
+
 type OrderStatus string
 
 const (
@@ -10,4 +12,9 @@ const (
 )
 
 type Order struct {
+	Number        string
+	Status        OrderStatus
+	UserID        int64
+	UploadedAt    time.Time
+	AccrualAmount float64
 }
