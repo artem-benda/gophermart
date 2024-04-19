@@ -5,7 +5,6 @@ import (
 	"github.com/artem-benda/gophermart/internal/domain/service"
 	"github.com/artem-benda/gophermart/internal/infrastructure/dao"
 	"github.com/artem-benda/gophermart/internal/infrastructure/repository"
-	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/log"
 )
@@ -15,7 +14,7 @@ func main() {
 	mustRunDbMigrations(cfg.DatabaseDSN)
 	dbPool := mustCreateConnectionPool(cfg.DatabaseDSN)
 	app := fiber.New()
-	v := validator.New()
+	v := mustCreateValidator()
 
 	withdrawalDAO := dao.Withdrawal{DB: dbPool}
 	withdrawalRepository := repository.WithdrawalRepository{DAO: withdrawalDAO}
@@ -31,7 +30,7 @@ func main() {
 
 	app.Post("/api/user/register", handler.NewRegisterUserHandler(&userService, v))
 	app.Post("/api/user/login", handler.NewLoginHandler(&userService, v))
-	app.Post("/api/user/orders", handler.NewUploadOrderHandler(&orderService))
+	app.Post("/api/user/orders", handler.NewUploadOrderHandler(&orderService, v))
 	app.Get("/api/user/orders", handler.NewGetUserOrdersHandler(&orderService))
 	app.Get("/api/user/balance", handler.NewGetUserBalanceHandler(&userService))
 	app.Post("/api/user/balance/withdraw", handler.NewWithdrawHandler(&withdrawalService, v))
