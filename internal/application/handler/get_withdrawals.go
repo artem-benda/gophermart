@@ -7,25 +7,25 @@ import (
 	"github.com/gofiber/fiber/v3"
 )
 
-type getUserOrders struct {
-	svc *service.Order
+type getWithdrawals struct {
+	svc *service.Withdrawal
 }
 
-func NewGetUserOrdersHandler(svc *service.Order) func(c fiber.Ctx) error {
-	controller := getUserOrders{svc}
+func NewGetWithdrawalsHandler(svc *service.Withdrawal) func(c fiber.Ctx) error {
+	controller := getWithdrawals{svc}
 	return controller.getList
 }
 
-func (h getUserOrders) getList(ctx fiber.Ctx) error {
+func (h getWithdrawals) getList(ctx fiber.Ctx) error {
 	userID := middleware.GetUserID(ctx)
 
-	orders, err := h.svc.GetAll(ctx, userID)
+	withdrawals, err := h.svc.GetList(ctx, userID)
 
 	if err != nil {
 		return err
 	}
 
-	err = ctx.JSON(dto.MapOrdersToDTO(orders))
+	err = ctx.JSON(dto.MapWithdrawalsToDTO(withdrawals))
 
 	if err != nil {
 		return err

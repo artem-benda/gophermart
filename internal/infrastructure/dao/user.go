@@ -21,6 +21,17 @@ func (dao User) GetByLogin(ctx fiber.Ctx, login string) (*entity.User, error) {
 	return user, nil
 }
 
+func (dao User) GetByID(ctx fiber.Ctx, userID int64) (*entity.User, error) {
+	user := new(entity.User)
+
+	row := dao.DB.QueryRow(ctx.UserContext(), "SELECT * FROM users WHERE id = $1", userID)
+	err := row.Scan(user)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
 func (dao User) Insert(ctx fiber.Ctx, user entity.User) (*int64, error) {
 	userId := new(int64)
 	row := dao.DB.QueryRow(ctx.UserContext(), "insert into users(login, password_hash) values($1, $2) returning id", user.Login, user.PasswordHash)

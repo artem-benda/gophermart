@@ -26,3 +26,7 @@ func (r *UserRepository) Register(ctx fiber.Ctx, login string, passwordHash stri
 func (r *UserRepository) GetUserByLogin(ctx fiber.Ctx, login string) (*entity.User, error) {
 	return r.DAO.GetByLogin(ctx, login)
 }
+
+func (r *UserRepository) GetUserById(ctx fiber.Ctx, userID int64) (*entity.User, error) {
+	return r.DAO.GetByID(ctx, userID)
+}

@@ -6,13 +6,15 @@ import (
 	"encoding/hex"
 	"errors"
 	"github.com/artem-benda/gophermart/internal/domain/contract"
+	"github.com/artem-benda/gophermart/internal/domain/entity"
 	"github.com/gofiber/fiber/v3"
 	"golang.org/x/crypto/pbkdf2"
 )
 
 type User struct {
-	UserRepository contract.UserRepository
-	Salt           []byte
+	UserRepository       contract.UserRepository
+	WithdrawalRepository contract.WithdrawalRepository
+	Salt                 []byte
 }
 
 var (
@@ -50,6 +52,19 @@ func (s User) Login(ctx fiber.Ctx, login string, password string) error {
 	}
 
 	return nil
+}
+
+func (s User) GetUserByID(ctx fiber.Ctx, userID int64) (*entity.User, error) {
+	user, err := s.UserRepository.GetUserById(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func (s User) GetTotalWithdrawals(ctx fiber.Ctx, userID int64) (*float64, error) {
+	return s.WithdrawalRepository.GetTotalByUserID(ctx, userID)
 }
 
 func computeHash(password string, salt []byte) (*string, error) {

@@ -13,4 +13,5 @@ var (
 type UserRepository interface {
 	Register(ctx fiber.Ctx, login string, passwordHash string) (*int64, error)
 	GetUserByLogin(ctx fiber.Ctx, login string) (*entity.User, error)
+	GetUserById(ctx fiber.Ctx, userID int64) (*entity.User, error)
 }

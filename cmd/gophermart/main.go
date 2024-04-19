@@ -17,9 +17,13 @@ func main() {
 	app := fiber.New()
 	v := validator.New()
 
+	withdrawalDAO := dao.Withdrawal{DB: dbPool}
+	withdrawalRepository := repository.WithdrawalRepository{DAO: withdrawalDAO}
+	withdrawalService := service.Withdrawal{WithdrawalRepository: &withdrawalRepository}
+
 	userDAO := dao.User{DB: dbPool}
 	userRepository := repository.UserRepository{DAO: userDAO}
-	userService := service.User{UserRepository: &userRepository, Salt: cfg.mustGetSalt()}
+	userService := service.User{UserRepository: &userRepository, WithdrawalRepository: &withdrawalRepository, Salt: cfg.mustGetSalt()}
 
 	orderDAO := dao.Order{DB: dbPool}
 	orderRepository := repository.OrderRepository{DAO: orderDAO}
@@ -29,5 +33,8 @@ func main() {
 	app.Post("/api/user/login", handler.NewLoginHandler(&userService, v))
 	app.Post("/api/user/orders", handler.NewUploadOrderHandler(&orderService))
 	app.Get("/api/user/orders", handler.NewGetUserOrdersHandler(&orderService))
+	app.Get("/api/user/balance", handler.NewGetUserBalanceHandler(&userService))
+	app.Post("/api/user/balance/withdraw", handler.NewWithdrawHandler(&withdrawalService, v))
+	app.Get("/api/user/withdrawals", handler.NewGetWithdrawalsHandler(&withdrawalService))
 	log.Fatal(app.Listen(cfg.Endpoint))
 }
