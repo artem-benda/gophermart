@@ -11,7 +11,7 @@ import (
 
 func main() {
 	cfg := mustReadConfig()
-	mustRunDbMigrations(cfg.DatabaseDSN)
+	mustRunDBMigrations(cfg.DatabaseDSN)
 	dbPool := mustCreateConnectionPool(cfg.DatabaseDSN)
 	app := fiber.New()
 	v := mustCreateValidator()
