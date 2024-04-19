@@ -27,6 +27,6 @@ func (r *UserRepository) GetUserByLogin(ctx fiber.Ctx, login string) (*entity.Us
 	return r.DAO.GetByLogin(ctx, login)
 }
 
-func (r *UserRepository) GetUserById(ctx fiber.Ctx, userID int64) (*entity.User, error) {
+func (r *UserRepository) GetUserByID(ctx fiber.Ctx, userID int64) (*entity.User, error) {
 	return r.DAO.GetByID(ctx, userID)
 }

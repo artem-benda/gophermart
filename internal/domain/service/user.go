@@ -55,7 +55,7 @@ func (s User) Login(ctx fiber.Ctx, login string, password string) error {
 }
 
 func (s User) GetUserByID(ctx fiber.Ctx, userID int64) (*entity.User, error) {
-	user, err := s.UserRepository.GetUserById(ctx, userID)
+	user, err := s.UserRepository.GetUserByID(ctx, userID)
 	if err != nil {
 		return nil, err
 	}

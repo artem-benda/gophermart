@@ -1,7 +1,7 @@
 package entity
 
 type User struct {
-	Id            int64
+	ID            int64
 	Login         string
 	PasswordHash  string
 	PointsBalance float64

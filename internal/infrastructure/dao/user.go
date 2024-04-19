@@ -33,11 +33,11 @@ func (dao User) GetByID(ctx fiber.Ctx, userID int64) (*entity.User, error) {
 }
 
 func (dao User) Insert(ctx fiber.Ctx, user entity.User) (*int64, error) {
-	userId := new(int64)
+	userID := new(int64)
 	row := dao.DB.QueryRow(ctx.UserContext(), "insert into users(login, password_hash) values($1, $2) returning id", user.Login, user.PasswordHash)
-	err := row.Scan(userId)
+	err := row.Scan(userID)
 	if err != nil {
 		return nil, err
 	}
-	return userId, nil
+	return userID, nil
 }
