@@ -3,6 +3,7 @@ package middleware
 import (
 	"github.com/artem-benda/gophermart/internal/application/jwt"
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/log"
 	"strings"
 )
 
@@ -37,9 +38,11 @@ func NewAuthMiddleware() fiber.Handler {
 }
 
 func GetUserID(ctx fiber.Ctx) int64 {
+	log.Debug("getting context userID...")
 	return ctx.Context().UserValue("userID").(int64)
 }
 
 func setUserID(ctx fiber.Ctx, userID int64) {
+	log.Debug("setting context userID... ", userID)
 	ctx.Context().SetUserValue("userID", userID)
 }

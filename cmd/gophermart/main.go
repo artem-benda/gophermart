@@ -36,12 +36,12 @@ func main() {
 	app.Post("/api/user/register", handler.NewRegisterUserHandler(&userService, v))
 	app.Post("/api/user/login", handler.NewLoginHandler(&userService, v))
 
-	authorizedGroup := app.Group("/")
-	authorizedGroup.Use(middleware.NewAuthMiddleware())
-	authorizedGroup.Post("/api/user/orders", handler.NewUploadOrderHandler(&orderService, v))
-	authorizedGroup.Get("/api/user/orders", handler.NewGetUserOrdersHandler(&orderService))
-	authorizedGroup.Get("/api/user/balance", handler.NewGetUserBalanceHandler(&userService))
-	authorizedGroup.Post("/api/user/balance/withdraw", handler.NewWithdrawHandler(&withdrawalService, v))
-	authorizedGroup.Get("/api/user/withdrawals", handler.NewGetWithdrawalsHandler(&withdrawalService))
+	auth := middleware.NewAuthMiddleware()
+	// Не используем .Use для middleware, т.к. нет общего пути для авторизоавнных и неавт. запросов
+	app.Post("/api/user/orders", handler.NewUploadOrderHandler(&orderService, v), auth)
+	app.Get("/api/user/orders", handler.NewGetUserOrdersHandler(&orderService), auth)
+	app.Get("/api/user/balance", handler.NewGetUserBalanceHandler(&userService), auth)
+	app.Post("/api/user/balance/withdraw", handler.NewWithdrawHandler(&withdrawalService, v), auth)
+	app.Get("/api/user/withdrawals", handler.NewGetWithdrawalsHandler(&withdrawalService), auth)
 	log.Fatal(app.Listen(cfg.Endpoint))
 }

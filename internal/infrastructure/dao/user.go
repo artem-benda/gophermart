@@ -13,8 +13,8 @@ type User struct {
 func (dao User) GetByLogin(ctx fiber.Ctx, login string) (*entity.User, error) {
 	user := new(entity.User)
 
-	row := dao.DB.QueryRow(ctx.UserContext(), "SELECT * FROM users WHERE login = $1", login)
-	err := row.Scan(user)
+	row := dao.DB.QueryRow(ctx.UserContext(), "SELECT id, login, password_hash, points_balance FROM users WHERE login = $1", login)
+	err := row.Scan(user.ID, user.Login, user.PasswordHash, user.PointsBalance)
 	if err != nil {
 		return nil, err
 	}
@@ -24,8 +24,8 @@ func (dao User) GetByLogin(ctx fiber.Ctx, login string) (*entity.User, error) {
 func (dao User) GetByID(ctx fiber.Ctx, userID int64) (*entity.User, error) {
 	user := new(entity.User)
 
-	row := dao.DB.QueryRow(ctx.UserContext(), "SELECT * FROM users WHERE id = $1", userID)
-	err := row.Scan(user)
+	row := dao.DB.QueryRow(ctx.UserContext(), "SELECT id, login, password_hash, points_balance FROM users WHERE id = $1", userID)
+	err := row.Scan(user.ID, user.Login, user.PasswordHash, user.PointsBalance)
 	if err != nil {
 		return nil, err
 	}

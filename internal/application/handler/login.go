@@ -10,16 +10,16 @@ import (
 )
 
 type loginUser struct {
-	svc service.User
+	svc *service.User
 	v   *validator.Validate
 }
 
 func NewLoginHandler(svc *service.User, v *validator.Validate) func(c fiber.Ctx) error {
-	controller := registerUser{svc, v}
-	return controller.registerUser
+	controller := loginUser{svc, v}
+	return controller.login
 }
 
-func (h loginUser) login(ctx fiber.Ctx, login string, password string) error {
+func (h loginUser) login(ctx fiber.Ctx) error {
 	ctx.Accepts("application/json")
 
 	loginDTO := new(dto.LoginRequest)
@@ -37,7 +37,7 @@ func (h loginUser) login(ctx fiber.Ctx, login string, password string) error {
 		return nil
 	}
 
-	err = h.svc.Login(ctx, login, password)
+	err = h.svc.Login(ctx, loginDTO.Login, loginDTO.Password)
 	if errors.Is(service.ErrUserNotFound, err) || errors.Is(service.ErrUnauthorized, err) {
 		return fiber.ErrUnauthorized
 	}
