@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/hex"
 	"flag"
+	"github.com/gofiber/fiber/v3/log"
 
 	"github.com/caarlos0/env/v10"
 )
@@ -25,9 +26,12 @@ func mustReadConfig() Config {
 	flag.StringVar(&config.Salt, "s", "BPjkLEqJfARvsYGW++WRcnCjxHyZsrnxXd/qdzpWIaE=", "salt in base64std format, using for hashing passwords, at least 8 bytes is recommended by the RFC")
 	flag.Parse()
 
+	log.Debug("flag endpoint", config.Endpoint)
+
 	if err := env.Parse(&config); err != nil {
 		panic(err)
 	}
+	log.Debug("endpoint", config.Endpoint)
 
 	return config
 }
