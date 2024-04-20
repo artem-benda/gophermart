@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/artem-benda/gophermart/internal/application/handler"
+	"github.com/artem-benda/gophermart/internal/application/middleware"
 	"github.com/artem-benda/gophermart/internal/domain/service"
 	"github.com/artem-benda/gophermart/internal/infrastructure/dao"
 	"github.com/artem-benda/gophermart/internal/infrastructure/repository"
@@ -34,10 +35,13 @@ func main() {
 
 	app.Post("/api/user/register", handler.NewRegisterUserHandler(&userService, v))
 	app.Post("/api/user/login", handler.NewLoginHandler(&userService, v))
-	app.Post("/api/user/orders", handler.NewUploadOrderHandler(&orderService, v))
-	app.Get("/api/user/orders", handler.NewGetUserOrdersHandler(&orderService))
-	app.Get("/api/user/balance", handler.NewGetUserBalanceHandler(&userService))
-	app.Post("/api/user/balance/withdraw", handler.NewWithdrawHandler(&withdrawalService, v))
-	app.Get("/api/user/withdrawals", handler.NewGetWithdrawalsHandler(&withdrawalService))
+
+	authorizedGroup := app.Group("/")
+	authorizedGroup.Use(middleware.NewAuthMiddleware())
+	authorizedGroup.Post("/api/user/orders", handler.NewUploadOrderHandler(&orderService, v))
+	authorizedGroup.Get("/api/user/orders", handler.NewGetUserOrdersHandler(&orderService))
+	authorizedGroup.Get("/api/user/balance", handler.NewGetUserBalanceHandler(&userService))
+	authorizedGroup.Post("/api/user/balance/withdraw", handler.NewWithdrawHandler(&withdrawalService, v))
+	authorizedGroup.Get("/api/user/withdrawals", handler.NewGetWithdrawalsHandler(&withdrawalService))
 	log.Fatal(app.Listen(cfg.Endpoint))
 }
