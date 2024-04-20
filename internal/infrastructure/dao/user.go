@@ -1,8 +1,10 @@
 package dao
 
 import (
+	"errors"
 	"github.com/artem-benda/gophermart/internal/domain/entity"
 	"github.com/gofiber/fiber/v3"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -15,6 +17,9 @@ func (dao User) GetByLogin(ctx fiber.Ctx, login string) (*entity.User, error) {
 
 	row := dao.DB.QueryRow(ctx.UserContext(), "SELECT id, login, password_hash, points_balance FROM users WHERE login = $1", login)
 	err := row.Scan(&user.ID, &user.Login, &user.PasswordHash, &user.PointsBalance)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, nil
+	}
 	if err != nil {
 		return nil, err
 	}
