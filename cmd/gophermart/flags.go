@@ -1,7 +1,7 @@
 package main
 
 import (
-	"encoding/hex"
+	"encoding/base64"
 	"flag"
 	"github.com/gofiber/fiber/v3/log"
 
@@ -37,7 +37,7 @@ func mustReadConfig() Config {
 }
 
 func (c Config) mustGetSalt() []byte {
-	salt, err := hex.DecodeString(c.Salt)
+	salt, err := base64.StdEncoding.DecodeString(c.Salt)
 
 	if err != nil {
 		panic(err)
