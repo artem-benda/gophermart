@@ -1,13 +1,13 @@
 package service
 
 import (
-	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
 	"github.com/artem-benda/gophermart/internal/domain/contract"
 	"github.com/artem-benda/gophermart/internal/domain/entity"
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/log"
 	"golang.org/x/crypto/pbkdf2"
 )
 
@@ -40,14 +40,17 @@ func (s User) Login(ctx fiber.Ctx, login string, password string) error {
 	user, err := s.UserRepository.GetUserByLogin(ctx, login)
 
 	if err != nil {
+		log.Debug(err)
 		return err
 	}
 
 	if user == nil {
+		log.Debug("user not found")
 		return ErrUserNotFound
 	}
 
 	if user.PasswordHash != *passwordHashString {
+		log.Debug("hash mismatch")
 		return ErrUnauthorized
 	}
 
@@ -68,12 +71,6 @@ func (s User) GetTotalWithdrawals(ctx fiber.Ctx, userID int64) (*float64, error)
 }
 
 func computeHash(password string, salt []byte) (*string, error) {
-	_, err := rand.Read(salt)
-
-	if err != nil {
-		return nil, err
-	}
-
 	pwPbkdf2 := pbkdf2.Key([]byte(password), salt, 10240, 32, sha256.New)
 	encodedHash := hex.EncodeToString(pwPbkdf2)
 
