@@ -11,25 +11,25 @@ type User struct {
 }
 
 func (dao User) GetByLogin(ctx fiber.Ctx, login string) (*entity.User, error) {
-	user := new(entity.User)
+	user := entity.User{}
 
 	row := dao.DB.QueryRow(ctx.UserContext(), "SELECT id, login, password_hash, points_balance FROM users WHERE login = $1", login)
-	err := row.Scan(user.ID, user.Login, user.PasswordHash, user.PointsBalance)
+	err := row.Scan(&user.ID, &user.Login, &user.PasswordHash, &user.PointsBalance)
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+	return &user, nil
 }
 
 func (dao User) GetByID(ctx fiber.Ctx, userID int64) (*entity.User, error) {
-	user := new(entity.User)
+	user := entity.User{}
 
 	row := dao.DB.QueryRow(ctx.UserContext(), "SELECT id, login, password_hash, points_balance FROM users WHERE id = $1", userID)
-	err := row.Scan(user.ID, user.Login, user.PasswordHash, user.PointsBalance)
+	err := row.Scan(&user.ID, &user.Login, &user.PasswordHash, &user.PointsBalance)
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+	return &user, nil
 }
 
 func (dao User) Insert(ctx fiber.Ctx, user entity.User) (*int64, error) {
