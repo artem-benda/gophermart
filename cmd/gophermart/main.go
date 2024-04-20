@@ -7,10 +7,12 @@ import (
 	"github.com/artem-benda/gophermart/internal/infrastructure/repository"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/log"
+	"os"
 )
 
 func main() {
 	log.SetLevel(log.LevelDebug)
+	log.SetOutput(os.Stdout)
 	log.Debug("starting application")
 	cfg := mustReadConfig()
 	mustRunDBMigrations(cfg.DatabaseDSN)
