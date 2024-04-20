@@ -6,6 +6,7 @@ import (
 	"github.com/artem-benda/gophermart/internal/infrastructure/dto"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/log"
 	"net/http"
 )
 
@@ -33,6 +34,7 @@ func (h uploadOrder) upload(ctx fiber.Ctx) error {
 
 	err = h.svc.Upload(ctx, userID, request.OrderNumber)
 	if err != nil {
+		log.Debug(err)
 		return fiber.ErrInternalServerError
 	}
 

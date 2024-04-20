@@ -12,7 +12,7 @@ type Order struct {
 }
 
 func (dao Order) Insert(ctx fiber.Ctx, userID int64, orderNumber string) error {
-	_, err := dao.DB.Exec(ctx.UserContext(), "insert into user_orders(order_number, user_id, uploaded_at, status) values($1, $2)", orderNumber, userID, time.Now(), entity.OrderStatusNew)
+	_, err := dao.DB.Exec(ctx.UserContext(), "insert into user_orders(order_number, user_id, uploaded_at, status) values($1, $2, $3, $4)", orderNumber, userID, time.Now(), entity.OrderStatusNew)
 	if err != nil {
 		return err
 	}
