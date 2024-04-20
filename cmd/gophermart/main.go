@@ -11,6 +11,7 @@ import (
 
 func main() {
 	log.SetLevel(log.LevelDebug)
+	log.Debug("starting application")
 	cfg := mustReadConfig()
 	mustRunDBMigrations(cfg.DatabaseDSN)
 	dbPool := mustCreateConnectionPool(cfg.DatabaseDSN)
