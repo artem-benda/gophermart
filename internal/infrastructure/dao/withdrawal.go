@@ -19,7 +19,7 @@ func (dao Withdrawal) Insert(ctx fiber.Ctx, userID int64, orderNumber string, am
 
 func (dao Withdrawal) GetSumByUserID(ctx fiber.Ctx, userID int64) (*float64, error) {
 	var sum sql.NullFloat64
-	row := dao.DB.QueryRow(ctx.UserContext(), "select SUM(amount) FROM order_withdrawals WHERE userID = $1", userID)
+	row := dao.DB.QueryRow(ctx.UserContext(), "select SUM(amount) FROM order_withdrawals WHERE user_id = $1", userID)
 	err := row.Scan(&sum)
 	if err != nil {
 		return nil, err
@@ -39,12 +39,12 @@ func (dao Withdrawal) GetByUserID(ctx fiber.Ctx, userID int64) ([]entity.Withdra
 	withdrawals := make([]entity.Withdrawal, 0)
 
 	for rows.Next() {
-		withdrawal := new(entity.Withdrawal)
-		err := rows.Scan(withdrawal.OrderNumber, withdrawal.UserID, withdrawal.Amount, withdrawal.CreatedAt, withdrawal.ProcessedAt)
+		withdrawal := entity.Withdrawal{}
+		err := rows.Scan(&withdrawal.OrderNumber, &withdrawal.UserID, &withdrawal.Amount, &withdrawal.CreatedAt, &withdrawal.ProcessedAt)
 		if err != nil {
 			return nil, err
 		}
-		withdrawals = append(withdrawals, *withdrawal)
+		withdrawals = append(withdrawals, withdrawal)
 	}
 
 	if rows.Err() != nil {
