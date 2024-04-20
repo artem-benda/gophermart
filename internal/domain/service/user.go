@@ -32,29 +32,29 @@ func (s User) Register(ctx fiber.Ctx, login string, password string) (*int64, er
 	return s.UserRepository.Register(ctx, login, *passwordHash)
 }
 
-func (s User) Login(ctx fiber.Ctx, login string, password string) error {
+func (s User) Login(ctx fiber.Ctx, login string, password string) (*int64, error) {
 	passwordHashString, err := computeHash(password, s.Salt)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	user, err := s.UserRepository.GetUserByLogin(ctx, login)
 
 	if err != nil {
 		log.Debug(err)
-		return err
+		return nil, err
 	}
 
 	if user == nil {
 		log.Debug("user not found")
-		return ErrUserNotFound
+		return nil, ErrUserNotFound
 	}
 
 	if user.PasswordHash != *passwordHashString {
 		log.Debug("hash mismatch")
-		return ErrUnauthorized
+		return nil, ErrUnauthorized
 	}
 
-	return nil
+	return &user.ID, nil
 }
 
 func (s User) GetUserByID(ctx fiber.Ctx, userID int64) (*entity.User, error) {

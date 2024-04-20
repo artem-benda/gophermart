@@ -2,6 +2,8 @@ package handler
 
 import (
 	"errors"
+	"fmt"
+	"github.com/artem-benda/gophermart/internal/application/jwt"
 	"github.com/artem-benda/gophermart/internal/domain/service"
 	"github.com/artem-benda/gophermart/internal/infrastructure/dto"
 	"github.com/go-playground/validator/v10"
@@ -37,9 +39,22 @@ func (h loginUser) login(ctx fiber.Ctx) error {
 		return nil
 	}
 
-	err = h.svc.Login(ctx, loginDTO.Login, loginDTO.Password)
+	id, err := h.svc.Login(ctx, loginDTO.Login, loginDTO.Password)
 	if errors.Is(service.ErrUserNotFound, err) || errors.Is(service.ErrUnauthorized, err) {
 		return fiber.ErrUnauthorized
 	}
-	return err
+
+	if err != nil {
+		ctx.Response().SetStatusCode(http.StatusInternalServerError)
+	}
+
+	token, err := jwt.BuildJWTString(*id)
+
+	if err != nil {
+		return err
+	}
+
+	ctx.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+
+	return nil
 }
