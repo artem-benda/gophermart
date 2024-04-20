@@ -29,7 +29,7 @@ func mustRunDBMigrations(dbURL string) {
 func mustCreateConnectionPool(databaseDSN string) *pgxpool.Pool {
 	dbPool, err := pgxpool.New(context.Background(), databaseDSN)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	return dbPool
 }

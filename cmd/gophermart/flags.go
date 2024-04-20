@@ -26,12 +26,9 @@ func mustReadConfig() Config {
 	flag.StringVar(&config.Salt, "s", "BPjkLEqJfARvsYGW++WRcnCjxHyZsrnxXd/qdzpWIaE=", "salt in base64std format, using for hashing passwords, at least 8 bytes is recommended by the RFC")
 	flag.Parse()
 
-	log.Debug("flag endpoint", config.Endpoint)
-
 	if err := env.Parse(&config); err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	log.Debug("endpoint", config.Endpoint)
 
 	return config
 }
@@ -40,7 +37,7 @@ func (c Config) mustGetSalt() []byte {
 	salt, err := base64.StdEncoding.DecodeString(c.Salt)
 
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	return salt
