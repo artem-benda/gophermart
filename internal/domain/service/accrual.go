@@ -27,7 +27,7 @@ mainLoop:
 		for _, order := range orders {
 			err := s.AccrualRepo.SyncOrderAccrual(ctx, order.Number)
 			if err != nil {
-				log.Debug("could not sync order", ":", order.Number)
+				log.Debug("could not sync order", ":", order.Number, ":", err)
 				time.Sleep(10 * time.Second)
 				continue mainLoop
 			}

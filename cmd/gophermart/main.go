@@ -41,6 +41,8 @@ func main() {
 	orderService := service.Order{OrderRepository: &orderRepository}
 
 	apiClient := client.New()
+	apiClient.SetBaseURL(cfg.AccrualEndpoint)
+	apiClient.SetLogger(log.DefaultLogger())
 	accrualAPI := api.AccrualAPI{Client: apiClient}
 
 	accrualRepository := repository.AccrualRepository{DAO: orderDAO, API: accrualAPI}
