@@ -6,9 +6,11 @@ import (
 	"github.com/artem-benda/gophermart/internal/application/middleware"
 	"github.com/artem-benda/gophermart/internal/application/worker"
 	"github.com/artem-benda/gophermart/internal/domain/service"
+	"github.com/artem-benda/gophermart/internal/infrastructure/api"
 	"github.com/artem-benda/gophermart/internal/infrastructure/dao"
 	"github.com/artem-benda/gophermart/internal/infrastructure/repository"
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/client"
 	"github.com/gofiber/fiber/v3/log"
 	"github.com/gofiber/fiber/v3/middleware/logger"
 	"os"
@@ -38,10 +40,14 @@ func main() {
 	orderRepository := repository.OrderRepository{DAO: orderDAO}
 	orderService := service.Order{OrderRepository: &orderRepository}
 
-	accrualRepository := repository.AccrualRepository{DAO: orderDAO}
+	apiClient := client.New()
+	accrualAPI := api.AccrualAPI{Client: apiClient}
+
+	accrualRepository := repository.AccrualRepository{DAO: orderDAO, API: accrualAPI}
 	accrualService := service.Accrual{OrdersRepo: &orderRepository, AccrualRepo: &accrualRepository}
 
-	go worker.NewAccrualWorkerFunc(&accrualService, context.Background())
+	workerFn := worker.NewAccrualWorkerFunc(&accrualService, context.Background())
+	go workerFn()
 
 	app.Post("/api/user/register", handler.NewRegisterUserHandler(&userService, v))
 	app.Post("/api/user/login", handler.NewLoginHandler(&userService, v))
