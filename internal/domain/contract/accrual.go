@@ -1,7 +1,7 @@
 package contract
 
-/*
+import "context"
+
 type AccrualRepository interface {
-	GetByOrderNumber(orderNumber string) (accrual entity.Accrual, err error)
+	SyncOrderAccrual(ctx context.Context, orderNumber string) error
 }
-*/

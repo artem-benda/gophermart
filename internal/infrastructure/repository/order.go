@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"errors"
 	"github.com/artem-benda/gophermart/internal/domain/contract"
 	"github.com/artem-benda/gophermart/internal/domain/entity"
@@ -25,4 +26,8 @@ func (r *OrderRepository) Upload(ctx fiber.Ctx, userID int64, orderNumber string
 
 func (r *OrderRepository) GetByUserID(ctx fiber.Ctx, userID int64) ([]entity.Order, error) {
 	return r.DAO.GetByUserID(ctx, userID)
+}
+
+func (r *OrderRepository) GetListToSyncAccruals(ctx context.Context) ([]entity.Order, error) {
+	return r.DAO.FindByStatuses(ctx, entity.OrderStatusNew, entity.OrderStatusProcessing)
 }

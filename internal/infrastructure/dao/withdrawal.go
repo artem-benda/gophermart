@@ -13,8 +13,22 @@ type Withdrawal struct {
 }
 
 func (dao Withdrawal) Insert(ctx fiber.Ctx, userID int64, orderNumber string, amount float64) error {
-	_, err := dao.DB.Exec(ctx.UserContext(), "insert into order_withdrawals(order_number, user_id, amount, created_at, processed_at) values($1, $2, $3, $4, $5)", orderNumber, userID, amount, time.Now(), time.Now())
-	return err
+	tx, err := dao.DB.Begin(ctx.UserContext())
+	if err != nil {
+		return err
+	}
+	defer func() {
+		_ = tx.Rollback(ctx.UserContext())
+	}()
+	_, err = tx.Exec(ctx.UserContext(), "insert into order_withdrawals(order_number, user_id, amount, created_at, processed_at) values($1, $2, $3, $4, $5)", orderNumber, userID, amount, time.Now(), time.Now())
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec(ctx.UserContext(), "update users SET points_balance = points_balance + $1 WHERE id = $2", amount, userID)
+	if err != nil {
+		return err
+	}
+	return tx.Commit(ctx.UserContext())
 }
 
 func (dao Withdrawal) GetSumByUserID(ctx fiber.Ctx, userID int64) (*float64, error) {

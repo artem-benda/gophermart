@@ -1,6 +1,8 @@
 package dao
 
 import (
+	"context"
+	"database/sql"
 	"github.com/artem-benda/gophermart/internal/domain/entity"
 	"github.com/gofiber/fiber/v3"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -21,6 +23,47 @@ func (dao Order) Insert(ctx fiber.Ctx, userID int64, orderNumber string) error {
 
 func (dao Order) GetByUserID(ctx fiber.Ctx, userID int64) ([]entity.Order, error) {
 	rows, err := dao.DB.Query(ctx.UserContext(), "SELECT order_number, user_id, uploaded_at, status, accrual_amount FROM user_orders WHERE user_id = $1 ORDER BY uploaded_at", userID)
+	if err != nil {
+		return nil, err
+	}
+
+	orders := make([]entity.Order, 0)
+
+	for rows.Next() {
+		order := entity.Order{}
+		err := rows.Scan(&order.Number, &order.UserID, &order.UploadedAt, &order.Status, &order.AccrualAmount)
+		if err != nil {
+			return nil, err
+		}
+		orders = append(orders, order)
+	}
+
+	if rows.Err() != nil {
+		return nil, err
+	}
+	return orders, nil
+}
+
+func (dao Order) UpdateOrder(ctx context.Context, orderNumber string, accrual *float64, status entity.OrderStatus) error {
+	var accrualNullable sql.NullFloat64
+	if accrual != nil {
+		accrualNullable = sql.NullFloat64{Float64: *accrual, Valid: true}
+	} else {
+		accrualNullable = sql.NullFloat64{Valid: false}
+	}
+	_, err := dao.DB.Exec(ctx, "update user_orders SET accrual_amount = $1, status = $2 WHERE order_number = $2", accrualNullable, string(status), orderNumber)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (dao Order) FindByStatuses(ctx context.Context, statuses ...entity.OrderStatus) ([]entity.Order, error) {
+	statusesStr := make([]string, 0)
+	for _, status := range statuses {
+		statusesStr = append(statusesStr, string(status))
+	}
+	rows, err := dao.DB.Query(ctx, "SELECT order_number, user_id, uploaded_at, status, accrual_amount FROM user_orders WHERE status = any($1) ORDER BY uploaded_at", statusesStr)
 	if err != nil {
 		return nil, err
 	}

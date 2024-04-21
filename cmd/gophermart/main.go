@@ -1,13 +1,16 @@
 package main
 
 import (
+	"context"
 	"github.com/artem-benda/gophermart/internal/application/handler"
 	"github.com/artem-benda/gophermart/internal/application/middleware"
+	"github.com/artem-benda/gophermart/internal/application/worker"
 	"github.com/artem-benda/gophermart/internal/domain/service"
 	"github.com/artem-benda/gophermart/internal/infrastructure/dao"
 	"github.com/artem-benda/gophermart/internal/infrastructure/repository"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/log"
+	"github.com/gofiber/fiber/v3/middleware/logger"
 	"os"
 )
 
@@ -18,7 +21,9 @@ func main() {
 	cfg := mustReadConfig()
 	mustRunDBMigrations(cfg.DatabaseDSN)
 	dbPool := mustCreateConnectionPool(cfg.DatabaseDSN)
+
 	app := fiber.New()
+	app.Use(logger.New())
 	v := mustCreateValidator()
 
 	withdrawalDAO := dao.Withdrawal{DB: dbPool}
@@ -32,6 +37,11 @@ func main() {
 	orderDAO := dao.Order{DB: dbPool}
 	orderRepository := repository.OrderRepository{DAO: orderDAO}
 	orderService := service.Order{OrderRepository: &orderRepository}
+
+	accrualRepository := repository.AccrualRepository{DAO: orderDAO}
+	accrualService := service.Accrual{OrdersRepo: &orderRepository, AccrualRepo: &accrualRepository}
+
+	go worker.NewAccrualWorkerFunc(&accrualService, context.Background())
 
 	app.Post("/api/user/register", handler.NewRegisterUserHandler(&userService, v))
 	app.Post("/api/user/login", handler.NewLoginHandler(&userService, v))
