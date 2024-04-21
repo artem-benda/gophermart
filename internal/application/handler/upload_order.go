@@ -38,5 +38,6 @@ func (h uploadOrder) upload(ctx fiber.Ctx) error {
 		return fiber.ErrInternalServerError
 	}
 
+	ctx.Response().SetStatusCode(http.StatusAccepted)
 	return nil
 }
