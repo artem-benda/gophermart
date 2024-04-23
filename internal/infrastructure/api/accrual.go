@@ -17,6 +17,7 @@ type AccrualAPI struct {
 func (api AccrualAPI) GetAccrualInfo(orderNumber string) (*entity.Accrual, error) {
 	resp, err := api.Client.Get("/api/orders/:number", client.Config{PathParam: map[string]string{"number": orderNumber}, Header: map[string]string{"Accept": "application/json"}})
 	if err != nil {
+		panic(err)
 		return nil, err
 	}
 	if resp.StatusCode() == 204 {
@@ -29,6 +30,7 @@ func (api AccrualAPI) GetAccrualInfo(orderNumber string) (*entity.Accrual, error
 	d := new(dto.GetAccrualInfoResponse)
 	err = resp.JSON(d)
 	if err != nil {
+		panic(err)
 		return nil, err
 	}
 
