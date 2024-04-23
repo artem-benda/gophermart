@@ -19,6 +19,18 @@ func (r *OrderRepository) Upload(ctx fiber.Ctx, userID int64, orderNumber string
 	err := r.DAO.Insert(ctx, userID, orderNumber)
 	var pgErr *pgconn.PgError
 	if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.IntegrityConstraintViolation {
+		order, err := r.DAO.GetByOrderNumber(ctx, orderNumber)
+		if err != nil {
+			return err
+		}
+
+		if order == nil {
+			return pgErr
+		}
+
+		if order.UserID != userID {
+			return contract.ErrOrderUploadedByAnotherUser
+		}
 		return contract.ErrOrderAlreadyUploaded
 	}
 	return err

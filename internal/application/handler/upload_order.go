@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"errors"
 	"github.com/artem-benda/gophermart/internal/application/middleware"
+	"github.com/artem-benda/gophermart/internal/domain/contract"
 	"github.com/artem-benda/gophermart/internal/domain/service"
 	"github.com/artem-benda/gophermart/internal/infrastructure/dto"
 	"github.com/go-playground/validator/v10"
@@ -33,6 +35,14 @@ func (h uploadOrder) upload(ctx fiber.Ctx) error {
 	userID := middleware.GetUserID(ctx)
 
 	err = h.svc.Upload(ctx, userID, request.OrderNumber)
+	if errors.Is(err, contract.ErrOrderAlreadyUploaded) {
+		ctx.Response().SetStatusCode(http.StatusOK)
+		return nil
+	}
+	if errors.Is(err, contract.ErrOrderUploadedByAnotherUser) {
+		ctx.Response().SetStatusCode(http.StatusConflict)
+		return nil
+	}
 	if err != nil {
 		log.Debug(err)
 		return fiber.ErrInternalServerError

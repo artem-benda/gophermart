@@ -8,7 +8,8 @@ import (
 )
 
 var (
-	ErrOrderAlreadyUploaded = errors.New("order already uploaded")
+	ErrOrderAlreadyUploaded       = errors.New("order already uploaded")
+	ErrOrderUploadedByAnotherUser = errors.New("order uploaded by another user")
 )
 
 type OrderRepository interface {
