@@ -28,7 +28,7 @@ func (h uploadOrder) upload(ctx fiber.Ctx) error {
 	request := dto.UploadOrderRequest{OrderNumber: string(ctx.Body())}
 	err := h.validate.Struct(request)
 	if err != nil {
-		ctx.Response().SetStatusCode(http.StatusBadRequest)
+		ctx.Response().SetStatusCode(http.StatusUnprocessableEntity)
 		return nil
 	}
 

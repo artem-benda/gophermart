@@ -18,7 +18,7 @@ type OrderRepository struct {
 func (r *OrderRepository) Upload(ctx fiber.Ctx, userID int64, orderNumber string) error {
 	err := r.DAO.Insert(ctx, userID, orderNumber)
 	var pgErr *pgconn.PgError
-	if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.IntegrityConstraintViolation {
+	if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.UniqueViolation {
 		order, err := r.DAO.GetByOrderNumber(ctx, orderNumber)
 		if err != nil {
 			return err
