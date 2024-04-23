@@ -5,6 +5,7 @@ import (
 	"github.com/artem-benda/gophermart/internal/domain/entity"
 	"github.com/artem-benda/gophermart/internal/infrastructure/api"
 	"github.com/artem-benda/gophermart/internal/infrastructure/dao"
+	"github.com/gofiber/fiber/v3/log"
 )
 
 type AccrualRepository struct {
@@ -16,6 +17,10 @@ func (r *AccrualRepository) SyncOrderAccrual(ctx context.Context, orderNumber st
 	accrual, err := r.API.GetAccrualInfo(orderNumber)
 	if err != nil {
 		return err
+	}
+	if accrual == nil {
+		log.Debug("accrual info not found")
+		return nil
 	}
 	var status entity.OrderStatus
 	switch accrual.Status {

@@ -10,7 +10,7 @@ import (
 
 type Config struct {
 	Endpoint        string `env:"RUN_ADDRESS"`
-	DatabaseDSN     string `env:"DATABASE_DSN"`
+	DatabaseDSN     string `env:"DATABASE_URI"`
 	AccrualEndpoint string `env:"ACCRUAL_SYSTEM_ADDRESS"`
 	LogLevel        string `env:"LOG_LEVEL"`
 	Salt            string `env:"SALT"`
