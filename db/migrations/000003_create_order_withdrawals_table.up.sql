@@ -14,9 +14,10 @@ ALTER TABLE order_withdrawals
         ON UPDATE CASCADE
         ON DELETE CASCADE;
 
+/*
 ALTER TABLE order_withdrawals
     ADD CONSTRAINT fk_order_withdrawals_order_number FOREIGN KEY (order_number)
         REFERENCES user_orders (order_number) MATCH SIMPLE
         ON UPDATE CASCADE
         ON DELETE CASCADE;
-
+*/
