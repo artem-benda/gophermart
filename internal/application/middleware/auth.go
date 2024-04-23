@@ -13,12 +13,14 @@ func NewAuthMiddleware() fiber.Handler {
 
 		if len(authHeaders) == 0 {
 			c.Status(fiber.StatusUnauthorized)
+			log.Debug("authHeaders len == 0 -> Unauthorized")
 			return nil
 		}
 
 		authHeader := authHeaders[0]
 		if authHeader == "" {
 			c.Status(fiber.StatusUnauthorized)
+			log.Debug("authHeader is empty -> Unauthorized")
 			return nil
 		}
 
@@ -28,6 +30,7 @@ func NewAuthMiddleware() fiber.Handler {
 		userID := jwt.GetUserID(reqToken)
 		if userID == -1 {
 			c.Status(fiber.StatusUnauthorized)
+			log.Debug("unable to get user id from token -> Unauthorized")
 			return nil
 		}
 

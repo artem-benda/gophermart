@@ -54,6 +54,6 @@ func GetUserID(tokenString string) int64 {
 		return -1
 	}
 
-	fmt.Println("Token os valid")
+	fmt.Println("Token is valid")
 	return claims.UserID
 }

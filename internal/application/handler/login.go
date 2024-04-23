@@ -8,6 +8,7 @@ import (
 	"github.com/artem-benda/gophermart/internal/infrastructure/dto"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/log"
 	"net/http"
 )
 
@@ -47,6 +48,8 @@ func (h loginUser) login(ctx fiber.Ctx) error {
 	if err != nil {
 		ctx.Response().SetStatusCode(http.StatusInternalServerError)
 	}
+
+	log.Debug("logging in user with id: ", *id)
 
 	token, err := jwt.BuildJWTString(*id)
 

@@ -7,6 +7,7 @@ import (
 	"github.com/artem-benda/gophermart/internal/infrastructure/dto"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/log"
 	"net/http"
 )
 
@@ -39,9 +40,12 @@ func (h registerUser) registerUser(ctx fiber.Ctx) error {
 	}
 
 	userID, err := h.svc.Register(ctx, userDTO.Login, userDTO.Password)
+
 	if err != nil {
 		return err
 	}
+
+	log.Debug("registered user with id: ", *userID)
 
 	token, err := jwt.BuildJWTString(*userID)
 
