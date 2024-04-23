@@ -9,8 +9,8 @@ import (
 	"github.com/artem-benda/gophermart/internal/infrastructure/api"
 	"github.com/artem-benda/gophermart/internal/infrastructure/dao"
 	"github.com/artem-benda/gophermart/internal/infrastructure/repository"
+	"github.com/go-resty/resty/v2"
 	"github.com/gofiber/fiber/v3"
-	"github.com/gofiber/fiber/v3/client"
 	"github.com/gofiber/fiber/v3/log"
 	"github.com/gofiber/fiber/v3/middleware/logger"
 	"os"
@@ -40,7 +40,7 @@ func main() {
 	orderRepository := repository.OrderRepository{DAO: orderDAO}
 	orderService := service.Order{OrderRepository: &orderRepository}
 
-	apiClient := client.New()
+	apiClient := resty.New()
 	apiClient.SetBaseURL("http://" + cfg.AccrualEndpoint)
 	apiClient.SetLogger(log.DefaultLogger())
 	accrualAPI := api.AccrualAPI{Client: apiClient}
