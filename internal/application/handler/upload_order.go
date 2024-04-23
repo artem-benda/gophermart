@@ -18,6 +18,7 @@ type uploadOrder struct {
 }
 
 func NewUploadOrderHandler(svc *service.Order, v *validator.Validate) func(c fiber.Ctx) error {
+	log.Debug("NewUploadOrderHandler...")
 	controller := uploadOrder{svc, v}
 	return controller.upload
 }

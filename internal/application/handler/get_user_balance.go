@@ -5,6 +5,7 @@ import (
 	"github.com/artem-benda/gophermart/internal/domain/service"
 	"github.com/artem-benda/gophermart/internal/infrastructure/dto"
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/log"
 )
 
 type getUserBalance struct {
@@ -12,6 +13,7 @@ type getUserBalance struct {
 }
 
 func NewGetUserBalanceHandler(svc *service.User) func(c fiber.Ctx) error {
+	log.Debug("NewGetUserBalanceHandler...")
 	controller := getUserBalance{svc}
 	return controller.get
 }

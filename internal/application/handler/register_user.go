@@ -17,6 +17,7 @@ type registerUser struct {
 }
 
 func NewRegisterUserHandler(svc *service.User, v *validator.Validate) func(c fiber.Ctx) error {
+	log.Debug("NewRegisterUserHandler...")
 	controller := registerUser{svc, v}
 	return controller.registerUser
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/artem-benda/gophermart/internal/infrastructure/dto"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/log"
 	"net/http"
 )
 
@@ -15,6 +16,7 @@ type withdraw struct {
 }
 
 func NewWithdrawHandler(svc *service.Withdrawal, validate *validator.Validate) func(c fiber.Ctx) error {
+	log.Debug("NewWithdrawHandler...")
 	controller := withdraw{svc, validate}
 	return controller.withdraw
 }

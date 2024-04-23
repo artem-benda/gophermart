@@ -5,6 +5,7 @@ import (
 	"github.com/artem-benda/gophermart/internal/domain/service"
 	"github.com/artem-benda/gophermart/internal/infrastructure/dto"
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/log"
 )
 
 type getUserOrders struct {
@@ -12,6 +13,7 @@ type getUserOrders struct {
 }
 
 func NewGetUserOrdersHandler(svc *service.Order) func(c fiber.Ctx) error {
+	log.Debug("NewGetUserOrdersHandler...")
 	controller := getUserOrders{svc}
 	return controller.getList
 }

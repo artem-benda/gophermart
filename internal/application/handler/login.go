@@ -18,6 +18,7 @@ type loginUser struct {
 }
 
 func NewLoginHandler(svc *service.User, v *validator.Validate) func(c fiber.Ctx) error {
+	log.Debug("NewLoginHandler...")
 	controller := loginUser{svc, v}
 	return controller.login
 }
