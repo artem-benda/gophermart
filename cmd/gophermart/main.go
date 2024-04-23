@@ -5,11 +5,6 @@ import (
 	"github.com/artem-benda/gophermart/internal/application/handler"
 	"github.com/artem-benda/gophermart/internal/application/middleware"
 	"github.com/artem-benda/gophermart/internal/application/worker"
-	"github.com/artem-benda/gophermart/internal/domain/service"
-	"github.com/artem-benda/gophermart/internal/infrastructure/api"
-	"github.com/artem-benda/gophermart/internal/infrastructure/dao"
-	"github.com/artem-benda/gophermart/internal/infrastructure/repository"
-	"github.com/go-resty/resty/v2"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/log"
 	"github.com/gofiber/fiber/v3/middleware/logger"
@@ -28,38 +23,20 @@ func main() {
 	app.Use(logger.New())
 	v := mustCreateValidator()
 
-	withdrawalDAO := dao.Withdrawal{DB: dbPool}
-	withdrawalRepository := repository.WithdrawalRepository{DAO: withdrawalDAO}
-	withdrawalService := service.Withdrawal{WithdrawalRepository: &withdrawalRepository}
+	deps := mustSetupAppDependencies(dbPool, cfg)
 
-	userDAO := dao.User{DB: dbPool}
-	userRepository := repository.UserRepository{DAO: userDAO}
-	userService := service.User{UserRepository: &userRepository, WithdrawalRepository: &withdrawalRepository, Salt: cfg.mustGetSalt()}
-
-	orderDAO := dao.Order{DB: dbPool}
-	orderRepository := repository.OrderRepository{DAO: orderDAO}
-	orderService := service.Order{OrderRepository: &orderRepository}
-
-	apiClient := resty.New()
-	apiClient.SetBaseURL(cfg.AccrualEndpoint)
-	apiClient.SetLogger(log.DefaultLogger())
-	accrualAPI := api.AccrualAPI{Client: apiClient}
-
-	accrualRepository := repository.AccrualRepository{DAO: orderDAO, API: accrualAPI}
-	accrualService := service.Accrual{OrdersRepo: &orderRepository, AccrualRepo: &accrualRepository}
-
-	workerFn := worker.NewAccrualWorkerFunc(&accrualService, context.Background())
+	workerFn := worker.NewAccrualWorkerFunc(deps.AccrualService, context.Background())
 	go workerFn()
 
-	app.Post("/api/user/register", handler.NewRegisterUserHandler(&userService, v))
-	app.Post("/api/user/login", handler.NewLoginHandler(&userService, v))
+	app.Post("/api/user/register", handler.NewRegisterUserHandler(deps.UserService, v))
+	app.Post("/api/user/login", handler.NewLoginHandler(deps.UserService, v))
 
 	auth := middleware.NewAuthMiddleware()
 	// Не используем .Use для middleware, т.к. нет общего пути для авторизоавнных и неавт. запросов
-	app.Post("/api/user/orders", handler.NewUploadOrderHandler(&orderService, v), auth)
-	app.Get("/api/user/orders", handler.NewGetUserOrdersHandler(&orderService), auth)
-	app.Get("/api/user/balance", handler.NewGetUserBalanceHandler(&userService), auth)
-	app.Post("/api/user/balance/withdraw", handler.NewWithdrawHandler(&withdrawalService, v), auth)
-	app.Get("/api/user/withdrawals", handler.NewGetWithdrawalsHandler(&withdrawalService), auth)
+	app.Post("/api/user/orders", handler.NewUploadOrderHandler(deps.OrderService, v), auth)
+	app.Get("/api/user/orders", handler.NewGetUserOrdersHandler(deps.OrderService), auth)
+	app.Get("/api/user/balance", handler.NewGetUserBalanceHandler(deps.UserService), auth)
+	app.Post("/api/user/balance/withdraw", handler.NewWithdrawHandler(deps.WithdrawalService, v), auth)
+	app.Get("/api/user/withdrawals", handler.NewGetWithdrawalsHandler(deps.WithdrawalService), auth)
 	log.Fatal(app.Listen(cfg.Endpoint))
 }

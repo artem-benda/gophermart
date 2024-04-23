@@ -11,13 +11,13 @@ type WithdrawalRepository struct {
 }
 
 func (r *WithdrawalRepository) GetTotalByUserID(ctx fiber.Ctx, userID int64) (*float64, error) {
-	return r.DAO.GetSumByUserID(ctx, userID)
+	return r.DAO.GetSumByUserID(ctx.UserContext(), userID)
 }
 
 func (r *WithdrawalRepository) GetListByUserID(ctx fiber.Ctx, userID int64) ([]entity.Withdrawal, error) {
-	return r.DAO.GetByUserID(ctx, userID)
+	return r.DAO.GetByUserID(ctx.UserContext(), userID)
 }
 
 func (r *WithdrawalRepository) Withdraw(ctx fiber.Ctx, userID int64, orderNumber string, amount float64) error {
-	return r.DAO.Insert(ctx, userID, orderNumber, amount)
+	return r.DAO.Insert(ctx.UserContext(), userID, orderNumber, amount)
 }

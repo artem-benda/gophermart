@@ -16,10 +16,10 @@ type OrderRepository struct {
 }
 
 func (r *OrderRepository) Upload(ctx fiber.Ctx, userID int64, orderNumber string) error {
-	err := r.DAO.Insert(ctx, userID, orderNumber)
+	err := r.DAO.Insert(ctx.UserContext(), userID, orderNumber)
 	var pgErr *pgconn.PgError
 	if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.UniqueViolation {
-		order, err := r.DAO.GetByOrderNumber(ctx, orderNumber)
+		order, err := r.DAO.GetByOrderNumber(ctx.UserContext(), orderNumber)
 		if err != nil {
 			return err
 		}
@@ -37,7 +37,7 @@ func (r *OrderRepository) Upload(ctx fiber.Ctx, userID int64, orderNumber string
 }
 
 func (r *OrderRepository) GetByUserID(ctx fiber.Ctx, userID int64) ([]entity.Order, error) {
-	return r.DAO.GetByUserID(ctx, userID)
+	return r.DAO.GetByUserID(ctx.UserContext(), userID)
 }
 
 func (r *OrderRepository) GetListToSyncAccruals(ctx context.Context) ([]entity.Order, error) {

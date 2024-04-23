@@ -15,7 +15,7 @@ type UserRepository struct {
 }
 
 func (r *UserRepository) Register(ctx fiber.Ctx, login string, passwordHash string) (*int64, error) {
-	id, err := r.DAO.Insert(ctx, entity.User{Login: login, PasswordHash: passwordHash})
+	id, err := r.DAO.Insert(ctx.UserContext(), entity.User{Login: login, PasswordHash: passwordHash})
 	var pgErr *pgconn.PgError
 	if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.IntegrityConstraintViolation {
 		return nil, contract.ErrUserAlreadyRegistered
@@ -24,9 +24,9 @@ func (r *UserRepository) Register(ctx fiber.Ctx, login string, passwordHash stri
 }
 
 func (r *UserRepository) GetUserByLogin(ctx fiber.Ctx, login string) (*entity.User, error) {
-	return r.DAO.GetByLogin(ctx, login)
+	return r.DAO.GetByLogin(ctx.UserContext(), login)
 }
 
 func (r *UserRepository) GetUserByID(ctx fiber.Ctx, userID int64) (*entity.User, error) {
-	return r.DAO.GetByID(ctx, userID)
+	return r.DAO.GetByID(ctx.UserContext(), userID)
 }
