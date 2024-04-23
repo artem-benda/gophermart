@@ -15,9 +15,11 @@ type AccrualAPI struct {
 }
 
 func (api AccrualAPI) GetAccrualInfo(orderNumber string) (*entity.Accrual, error) {
+	log.Debug("making accrual api call for order number: ", orderNumber)
 	result := new(dto.GetAccrualInfoResponse)
 
-	resp, err := api.Client.R().SetPathParam("number", orderNumber).
+	resp, err := api.Client.R().
+		SetPathParam("number", orderNumber).
 		SetResult(result).
 		Get("/api/orders/{number}")
 	if err != nil {
