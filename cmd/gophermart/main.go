@@ -41,7 +41,7 @@ func main() {
 	orderService := service.Order{OrderRepository: &orderRepository}
 
 	apiClient := client.New()
-	apiClient.SetBaseURL(cfg.AccrualEndpoint)
+	apiClient.SetBaseURL("http://" + cfg.AccrualEndpoint)
 	apiClient.SetLogger(log.DefaultLogger())
 	accrualAPI := api.AccrualAPI{Client: apiClient}
 
