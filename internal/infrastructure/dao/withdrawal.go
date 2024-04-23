@@ -24,7 +24,7 @@ func (dao Withdrawal) Insert(ctx fiber.Ctx, userID int64, orderNumber string, am
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec(ctx.UserContext(), "update users SET points_balance = points_balance + $1 WHERE id = $2", amount, userID)
+	_, err = tx.Exec(ctx.UserContext(), "update users SET points_balance = points_balance - $1 WHERE id = $2", amount, userID)
 	if err != nil {
 		return err
 	}

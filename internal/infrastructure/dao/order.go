@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+var ErrInvalidUserIdForOrder = errors.New("invalid user id for order")
+
 type Order struct {
 	DB *pgxpool.Pool
 }
@@ -62,17 +64,32 @@ func (dao Order) GetByOrderNumber(ctx fiber.Ctx, orderNumber string) (*entity.Or
 }
 
 func (dao Order) UpdateOrder(ctx context.Context, orderNumber string, accrual *float64, status entity.OrderStatus) error {
+	tx, err := dao.DB.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		_ = tx.Rollback(ctx)
+	}()
 	var accrualNullable sql.NullFloat64
 	if accrual != nil {
 		accrualNullable = sql.NullFloat64{Float64: *accrual, Valid: true}
 	} else {
 		accrualNullable = sql.NullFloat64{Valid: false}
 	}
-	_, err := dao.DB.Exec(ctx, "update user_orders SET accrual_amount = $1, status = $2 WHERE order_number = $3", accrualNullable, string(status), orderNumber)
+	row := tx.QueryRow(ctx, "update user_orders SET accrual_amount = $1, status = $2 WHERE order_number = $3 returning user_id", accrualNullable, string(status), orderNumber)
+	var userID int64
+	err = row.Scan(userID)
 	if err != nil {
 		return err
 	}
-	return nil
+	if accrual != nil {
+		_, err = tx.Exec(ctx, "update users SET points_balance = points_balance + $1 WHERE id = $2", accrual, userID)
+		if err != nil {
+			return err
+		}
+	}
+	return tx.Commit(ctx)
 }
 
 func (dao Order) FindByStatuses(ctx context.Context, statuses ...entity.OrderStatus) ([]entity.Order, error) {
