@@ -10,8 +10,6 @@ import (
 	"time"
 )
 
-var ErrInvalidUserIdForOrder = errors.New("invalid user id for order")
-
 type Order struct {
 	DB *pgxpool.Pool
 }
@@ -79,7 +77,7 @@ func (dao Order) UpdateOrder(ctx context.Context, orderNumber string, accrual *f
 	}
 	row := tx.QueryRow(ctx, "update user_orders SET accrual_amount = $1, status = $2 WHERE order_number = $3 returning user_id", accrualNullable, string(status), orderNumber)
 	var userID int64
-	err = row.Scan(userID)
+	err = row.Scan(&userID)
 	if err != nil {
 		return err
 	}
