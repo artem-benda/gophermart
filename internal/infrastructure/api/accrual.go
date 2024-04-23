@@ -19,12 +19,9 @@ func (api AccrualAPI) GetAccrualInfo(orderNumber string) (*entity.Accrual, error
 	result := new(dto.GetAccrualInfoResponse)
 
 	resp, err := api.Client.R().
-		// SetPathParam("number", orderNumber).
-		SetPathParams(map[string]string{
-			"number": orderNumber,
-		}).
+		SetPathParam("orderNumber", orderNumber).
 		SetResult(result).
-		Get("/api/orders/{number}")
+		Get("/api/orders/{orderNumber}")
 	if err != nil {
 		return nil, err
 	}
