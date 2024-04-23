@@ -40,5 +40,10 @@ func (r *AccrualRepository) SyncOrderAccrual(ctx context.Context, orderNumber st
 		return ErrUnknownAccrualStatus
 	}
 
-	return r.DAO.UpdateOrder(ctx, orderNumber, accrual.AccrualAmount, status)
+	err = r.DAO.UpdateOrder(ctx, orderNumber, accrual.AccrualAmount, status)
+	if err != nil {
+		log.Debug("accrual save to DB error: ", err)
+	}
+
+	return err
 }
