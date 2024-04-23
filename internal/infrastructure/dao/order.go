@@ -68,7 +68,7 @@ func (dao Order) UpdateOrder(ctx context.Context, orderNumber string, accrual *f
 	} else {
 		accrualNullable = sql.NullFloat64{Valid: false}
 	}
-	_, err := dao.DB.Exec(ctx, "update user_orders SET accrual_amount = $1, status = $2 WHERE order_number = $2", accrualNullable, string(status), orderNumber)
+	_, err := dao.DB.Exec(ctx, "update user_orders SET accrual_amount = $1, status = $2 WHERE order_number = $3", accrualNullable, string(status), orderNumber)
 	if err != nil {
 		return err
 	}
