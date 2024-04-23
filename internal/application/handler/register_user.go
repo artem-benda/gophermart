@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
 	"github.com/artem-benda/gophermart/internal/application/jwt"
+	"github.com/artem-benda/gophermart/internal/domain/contract"
 	"github.com/artem-benda/gophermart/internal/domain/service"
 	"github.com/artem-benda/gophermart/internal/infrastructure/dto"
 	"github.com/go-playground/validator/v10"
@@ -41,6 +43,11 @@ func (h registerUser) registerUser(ctx fiber.Ctx) error {
 	}
 
 	userID, err := h.svc.Register(ctx, userDTO.Login, userDTO.Password)
+
+	if errors.Is(err, contract.ErrUserAlreadyRegistered) {
+		ctx.Response().SetStatusCode(http.StatusConflict)
+		return nil
+	}
 
 	if err != nil {
 		return err

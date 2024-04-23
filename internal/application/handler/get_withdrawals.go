@@ -27,6 +27,11 @@ func (h getWithdrawals) getList(ctx fiber.Ctx) error {
 		return err
 	}
 
+	if len(withdrawals) == 0 {
+		ctx.Response().SetStatusCode(fiber.StatusNoContent)
+		return nil
+	}
+
 	err = ctx.JSON(dto.MapWithdrawalsToDTO(withdrawals))
 
 	if err != nil {

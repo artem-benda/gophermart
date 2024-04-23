@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"errors"
 	"github.com/artem-benda/gophermart/internal/application/middleware"
+	"github.com/artem-benda/gophermart/internal/domain/contract"
 	"github.com/artem-benda/gophermart/internal/domain/service"
 	"github.com/artem-benda/gophermart/internal/infrastructure/dto"
 	"github.com/go-playground/validator/v10"
@@ -35,9 +37,16 @@ func (h withdraw) withdraw(ctx fiber.Ctx) error {
 
 	err = h.validate.Struct(withdrawDTO)
 	if err != nil {
-		ctx.Response().SetStatusCode(http.StatusBadRequest)
+		ctx.Response().SetStatusCode(http.StatusUnprocessableEntity)
 		return nil
 	}
 
-	return h.svc.Withdraw(ctx, userID, withdrawDTO.OrderNumber, withdrawDTO.Amount)
+	err = h.svc.Withdraw(ctx, userID, withdrawDTO.OrderNumber, withdrawDTO.Amount)
+
+	if errors.Is(err, contract.ErrInsufficientFunds) {
+		ctx.Response().SetStatusCode(http.StatusPaymentRequired)
+		return nil
+	}
+
+	return err
 }

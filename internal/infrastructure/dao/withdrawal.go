@@ -3,6 +3,7 @@ package dao
 import (
 	"context"
 	"database/sql"
+	"github.com/artem-benda/gophermart/internal/domain/contract"
 	"github.com/artem-benda/gophermart/internal/domain/entity"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"time"
@@ -24,9 +25,14 @@ func (dao Withdrawal) Insert(ctx context.Context, userID int64, orderNumber stri
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec(ctx, "update users SET points_balance = points_balance - $1 WHERE id = $2", amount, userID)
+	row := tx.QueryRow(ctx, "update users SET points_balance = points_balance - $1 WHERE id = $2 returning points_balance", amount, userID)
+	var newBalance float64
+	err = row.Scan(&newBalance)
 	if err != nil {
 		return err
+	}
+	if newBalance < 0 {
+		return contract.ErrInsufficientFunds
 	}
 	return tx.Commit(ctx)
 }
