@@ -5,6 +5,7 @@ import (
 	"github.com/artem-benda/gophermart/internal/domain/entity"
 	"github.com/artem-benda/gophermart/internal/infrastructure/dto"
 	"github.com/gofiber/fiber/v3/client"
+	"github.com/gofiber/fiber/v3/log"
 )
 
 var ErrTemporary = errors.New("temporary error")
@@ -22,6 +23,7 @@ func (api AccrualAPI) GetAccrualInfo(orderNumber string) (*entity.Accrual, error
 		return nil, nil
 	}
 	if resp.StatusCode() != 200 {
+		log.Debug("unexpected status code: ", resp.StatusCode())
 		return nil, ErrTemporary
 	}
 	d := new(dto.GetAccrualInfoResponse)
