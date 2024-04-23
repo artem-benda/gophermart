@@ -19,7 +19,7 @@ func (api AccrualAPI) GetAccrualInfo(orderNumber string) (*entity.Accrual, error
 
 	resp, err := api.Client.R().SetPathParam("number", orderNumber).
 		SetResult(result).
-		Get("/api/orders/:number")
+		Get("/api/orders/{number}")
 	if err != nil {
 		return nil, err
 	}

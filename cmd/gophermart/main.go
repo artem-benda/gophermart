@@ -41,7 +41,7 @@ func main() {
 	orderService := service.Order{OrderRepository: &orderRepository}
 
 	apiClient := resty.New()
-	apiClient.SetBaseURL("http://" + cfg.AccrualEndpoint)
+	apiClient.SetBaseURL(cfg.AccrualEndpoint)
 	apiClient.SetLogger(log.DefaultLogger())
 	accrualAPI := api.AccrualAPI{Client: apiClient}
 
