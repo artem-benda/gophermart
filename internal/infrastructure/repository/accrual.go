@@ -2,11 +2,14 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"github.com/artem-benda/gophermart/internal/domain/entity"
 	"github.com/artem-benda/gophermart/internal/infrastructure/api"
 	"github.com/artem-benda/gophermart/internal/infrastructure/dao"
 	"github.com/gofiber/fiber/v3/log"
 )
+
+var ErrUnknownAccrualStatus = errors.New("unknown accrual status")
 
 type AccrualRepository struct {
 	DAO dao.Order
@@ -16,6 +19,7 @@ type AccrualRepository struct {
 func (r *AccrualRepository) SyncOrderAccrual(ctx context.Context, orderNumber string) error {
 	accrual, err := r.API.GetAccrualInfo(orderNumber)
 	if err != nil {
+		log.Debug("accrual api error: ", err)
 		return err
 	}
 	if accrual == nil {
@@ -32,6 +36,9 @@ func (r *AccrualRepository) SyncOrderAccrual(ctx context.Context, orderNumber st
 		status = entity.OrderStatusProcessing
 	case entity.AccrualStatusProcessed:
 		status = entity.OrderStatusProcessed
+	default:
+		return ErrUnknownAccrualStatus
 	}
+
 	return r.DAO.UpdateOrder(ctx, orderNumber, accrual.AccrualAmount, status)
 }
