@@ -1,9 +1,11 @@
-package middleware
+package fake
 
 import (
-	"github.com/artem-benda/gophermart/internal/application/jwt"
+	"errors"
+	"github.com/artem-benda/gophermart/internal/application/middleware"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/log"
+	"strconv"
 	"strings"
 )
 
@@ -27,25 +29,13 @@ func NewAuthMiddleware() fiber.Handler {
 		splitToken := strings.Split(authHeader, "Bearer ")
 		reqToken := splitToken[1]
 
-		userID := jwt.GetUserID(reqToken)
-		if userID == -1 {
-			c.Status(fiber.StatusUnauthorized)
-			log.Debug("unable to get user id from token -> Unauthorized")
-			return nil
+		userID, err := strconv.ParseInt(reqToken, 10, 64)
+		if err != nil {
+			panic(errors.New("invalid value, use userID as token value, for ex. 'Bearer: 1'"))
 		}
 
-		SetUserID(c, userID)
+		middleware.SetUserID(c, userID)
 
 		return c.Next()
 	}
-}
-
-func GetUserID(ctx fiber.Ctx) int64 {
-	log.Debug("getting context userID...")
-	return ctx.Context().UserValue("userID").(int64)
-}
-
-func SetUserID(ctx fiber.Ctx, userID int64) {
-	log.Debug("setting context userID... ", userID)
-	ctx.Context().SetUserValue("userID", userID)
 }
