@@ -47,7 +47,7 @@ func (h loginUser) login(ctx fiber.Ctx) error {
 	}
 
 	if err != nil {
-		ctx.Response().SetStatusCode(http.StatusInternalServerError)
+		return fiber.ErrInternalServerError
 	}
 
 	log.Debug("logging in user with id: ", *id)

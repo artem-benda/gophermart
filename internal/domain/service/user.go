@@ -50,7 +50,7 @@ func (s User) Login(ctx fiber.Ctx, login string, password string) (*int64, error
 	}
 
 	if user.PasswordHash != *passwordHashString {
-		log.Debug("hash mismatch")
+		log.Debug("hash mismatch: ", "expected: ", user.PasswordHash, ", actual: ", *passwordHashString)
 		return nil, ErrUnauthorized
 	}
 

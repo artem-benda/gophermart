@@ -17,10 +17,16 @@ func (r *UserRepository) Register(ctx fiber.Ctx, login string, passwordHash stri
 
 func (r *UserRepository) GetUserByLogin(ctx fiber.Ctx, login string) (*entity.User, error) {
 	args := r.Called(ctx, login)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
 	return args.Get(0).(*entity.User), args.Error(1)
 }
 
 func (r *UserRepository) GetUserByID(ctx fiber.Ctx, userID int64) (*entity.User, error) {
 	args := r.Called(ctx, userID)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
 	return args.Get(0).(*entity.User), args.Error(1)
 }
