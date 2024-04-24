@@ -29,6 +29,11 @@ func (h getUserOrders) getList(ctx fiber.Ctx) error {
 
 	err = ctx.JSON(dto.MapOrdersToDTO(orders))
 
+	if len(orders) == 0 {
+		ctx.Response().SetStatusCode(fiber.StatusNoContent)
+		return nil
+	}
+
 	if err != nil {
 		return err
 	}

@@ -84,7 +84,7 @@ func Test_getUserBalance_get(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			app := fiber.New()
 			fakeAuth := fake.NewAuthMiddleware()
-			h := NewGetUserBalanceHandler(newTestUserService(tt.fields.balanceValue, tt.fields.balanceErr, tt.fields.totalWithdrawalsValue, tt.fields.totalWithdrawalsErr))
+			h := NewGetUserBalanceHandler(newTestUserBalanceService(tt.fields.balanceValue, tt.fields.balanceErr, tt.fields.totalWithdrawalsValue, tt.fields.totalWithdrawalsErr))
 			app.Get(testRouteValue, h, fakeAuth)
 
 			req, _ := http.NewRequest(
@@ -126,7 +126,7 @@ func Test_getUserBalance_get(t *testing.T) {
 	}
 }
 
-func newTestUserService(balance float64, balanceErr error, totalWithdrawn *float64, totalWithdrawnErr error) *service.User {
+func newTestUserBalanceService(balance float64, balanceErr error, totalWithdrawn *float64, totalWithdrawnErr error) *service.User {
 	userRepoMock := new(appmock.UserRepository)
 	withdrawalRepoMock := new(appmock.WithdrawalRepository)
 
