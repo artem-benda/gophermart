@@ -100,10 +100,11 @@ func Test_getUserBalance_get(t *testing.T) {
 			// Perform the request plain with the app.
 			// The -1 disables request latency.
 			res, err := app.Test(req, -1)
-			defer res.Body.Close()
 
 			// verify that no error occured, that is not expected
 			assert.Equalf(t, tt.expectedError, err != nil, tt.name)
+
+			defer res.Body.Close()
 
 			// As expected errors lead to broken responses, the next
 			// test case needs to be processed
