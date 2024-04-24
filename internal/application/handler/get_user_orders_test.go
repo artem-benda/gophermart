@@ -104,9 +104,7 @@ func Test_getUserOrders_getList(t *testing.T) {
 			// Perform the request plain with the app.
 			// The -1 disables request latency.
 			res, err := app.Test(req, -1)
-			defer func(Body io.ReadCloser) {
-				_ = Body.Close()
-			}(res.Body)
+			defer res.Body.Close()
 
 			// verify that no error occured, that is not expected
 			assert.Equalf(t, tt.expectedError, err != nil, tt.name)
