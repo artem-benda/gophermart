@@ -48,6 +48,14 @@ func Test_getUserBalance_get(t *testing.T) {
 			expectedBody:  `{"current":1.2345,"withdrawn":3.45667}`,
 		},
 		{
+			name:          "on success should match balance and withdrawalsTotal=nil values",
+			fields:        fields{balanceValue: testBalanceValue, balanceErr: nil, totalWithdrawalsValue: nil, totalWithdrawalsErr: nil},
+			args:          args{userID: 1},
+			expectedError: false,
+			expectedCode:  200,
+			expectedBody:  `{"current":1.2345}`,
+		},
+		{
 			name:          "on unauthorized should return 401",
 			fields:        fields{balanceValue: testBalanceValue, balanceErr: nil, totalWithdrawalsValue: &testTotalWithdrawalsValue, totalWithdrawalsErr: nil},
 			args:          args{userID: 0},
