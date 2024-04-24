@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/artem-benda/gophermart/internal/domain/entity"
 	"github.com/artem-benda/gophermart/internal/domain/service"
 	"github.com/artem-benda/gophermart/internal/infrastructure/dto"
 	appmock "github.com/artem-benda/gophermart/internal/test/mock"
@@ -18,11 +17,15 @@ import (
 	"testing"
 )
 
-func Test_loginUser_login(t *testing.T) {
+var (
+	testUserID int64 = 1
+)
+
+func Test_registerUser_registerUser(t *testing.T) {
 	type fields struct {
-		login             string
-		passwordHash      string
-		getUserByLoginErr error
+		login         string
+		passwordHash  string
+		insertUserErr error
 	}
 	type args struct {
 		login    string
@@ -37,24 +40,16 @@ func Test_loginUser_login(t *testing.T) {
 		expectedBody  string
 	}{
 		{
-			name:          "on success should return 200",
-			fields:        fields{login: "test", passwordHash: "afd535a859b731dff667376f1bad148bec41a419ffbda681791843eb4e1e3b2f", getUserByLoginErr: nil},
+			name:          "on success should match password hash and return 200",
+			fields:        fields{login: "test", passwordHash: "afd535a859b731dff667376f1bad148bec41a419ffbda681791843eb4e1e3b2f", insertUserErr: nil},
 			args:          args{login: "test", password: "2fewfwe"},
 			expectedError: false,
 			expectedCode:  200,
 			expectedBody:  ``,
 		},
 		{
-			name:          "on password mismatch should return 401",
-			fields:        fields{login: "test", passwordHash: "test", getUserByLoginErr: nil},
-			args:          args{login: "test", password: "2fewfwe"},
-			expectedError: false,
-			expectedCode:  401,
-			expectedBody:  `Unauthorized`,
-		},
-		{
-			name:          "on GetUserByLogin error should return 500",
-			fields:        fields{login: "test", passwordHash: "2fewfwe", getUserByLoginErr: errors.New("some error")},
+			name:          "on InsertUser error should return 500",
+			fields:        fields{login: "test", passwordHash: "afd535a859b731dff667376f1bad148bec41a419ffbda681791843eb4e1e3b2f", insertUserErr: errors.New("some error")},
 			args:          args{login: "test", password: "2fewfwe"},
 			expectedError: false,
 			expectedCode:  500,
@@ -69,7 +64,7 @@ func Test_loginUser_login(t *testing.T) {
 			if err != nil {
 				log.Fatal(err)
 			}
-			h := NewLoginHandler(newTestUserLoginService(tt.fields.login, tt.fields.passwordHash, tt.fields.getUserByLoginErr), validate)
+			h := NewRegisterUserHandler(newTestUserRegisterService(tt.fields.login, tt.fields.passwordHash, tt.fields.insertUserErr), validate)
 			app.Post(testRouteValue, h)
 
 			req, _ := http.NewRequest(
@@ -109,7 +104,7 @@ func Test_loginUser_login(t *testing.T) {
 	}
 }
 
-func newTestUserLoginService(login string, passwordHash string, getUserErr error) *service.User {
+func newTestUserRegisterService(login string, passwordHash string, insertUserErr error) *service.User {
 	userRepoMock := new(appmock.UserRepository)
 	withdrawalRepoMock := new(appmock.WithdrawalRepository)
 
@@ -119,10 +114,10 @@ func newTestUserLoginService(login string, passwordHash string, getUserErr error
 		Salt:                 []byte("1234567890asdfghj"),
 	}
 
-	if getUserErr == nil {
-		userRepoMock.On("GetUserByLogin", mock.Anything, login).Return(&entity.User{ID: 1, Login: login, PasswordHash: passwordHash, PointsBalance: 0}, nil)
+	if insertUserErr == nil {
+		userRepoMock.On("Register", mock.Anything, login, passwordHash).Return(&testUserID, nil)
 	} else {
-		userRepoMock.On("GetUserByLogin", mock.Anything, login).Return(nil, getUserErr)
+		userRepoMock.On("Register", mock.Anything, login, passwordHash).Return(nil, insertUserErr)
 	}
 
 	return svc

@@ -12,6 +12,9 @@ type UserRepository struct {
 
 func (r *UserRepository) Register(ctx fiber.Ctx, login string, passwordHash string) (*int64, error) {
 	args := r.Called(ctx, login, passwordHash)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
 	return args.Get(0).(*int64), args.Error(1)
 }
 

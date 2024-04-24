@@ -50,7 +50,8 @@ func (h registerUser) registerUser(ctx fiber.Ctx) error {
 	}
 
 	if err != nil {
-		return err
+		log.Debug("unexpected error", ":", err)
+		return fiber.ErrInternalServerError
 	}
 
 	log.Debug("registered user with id: ", *userID)
